@@ -1,24 +1,57 @@
 class Solution {
 public:
     int numTilePossibilities(string tiles) {
-        //track frequency of char in tiles
-        int charcount[26];
-        for(char c :tiles){
-            charcount[c-'A']++;
-        }
-        // find all posible sequence with sequence count 
-        return sequencecount(charcount);
+        unordered_set<string> seen;
+
+        // Sort characters to handle duplicates efficiently
+        sort(tiles.begin(), tiles.end());
+
+        // Find all unique sequences and their permutations
+        return generateSequences(tiles, "", 0, seen) - 1;
     }
-    int sequencecount(int charcount[26]){
-        int totalcount=0;
-        //// Try using each available character
-        for(int pos=0;pos<26;pos++){
-            if(charcount[pos]==0) continue;
-            totalcount++;
-            charcount[pos]--;
-            totalcount+=sequencecount(charcount);
-            charcount[pos]++;
+
+private:
+    int factorial(int n) {
+        if (n <= 1) {
+            return 1;
         }
-        return totalcount;
+
+        int result = 1;
+        for (int num = 2; num <= n; num++) {
+            result *= num;
+        }
+        return result;
+    }
+
+    int countPermutations(string& seq) {
+        // Count frequency of each character
+        int charCount[26] = {0};
+        for (char ch : seq) {
+            charCount[ch - 'A']++;
+        }
+
+        // Calculate permutations using factorial formula
+        int total = factorial(seq.length());
+        for (int count : charCount) {
+            if (count > 1) {
+                total /= factorial(count);
+            }
+        }
+        return total;
+    }
+
+    int generateSequences(string& tiles, string current, int pos,
+                          unordered_set<string>& seen) {
+        if (pos >= tiles.length()) {
+            // If new sequence found, count its unique permutations
+            if (seen.insert(current).second) {
+                return countPermutations(current);
+            }
+            return 0;
+        }
+
+        // Try including and excluding current character
+        return generateSequences(tiles, current, pos + 1, seen) +
+               generateSequences(tiles, current + tiles[pos], pos + 1, seen);
     }
 };
