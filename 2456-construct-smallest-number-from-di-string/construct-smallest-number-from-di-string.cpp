@@ -1,31 +1,35 @@
 class Solution {
 public:
+// For example, given the pattern"IDID", we start by pushing1onto the stack because we always push the next number. Since the first character is'I', we immediately pop from the stack and append1to the result. Then we push2and, seeing the next'D', we push3instead of immediately appending. The'I'that follows tells us it's time to pop and append the numbers, so3and then2are added to the result, maintaining the required decreasing order. The process continues in this manner, ensuring that the number we build respects the pattern while remaining lexicographically smallest.
+
+// Algorithm
+// Initialize an empty stringresultto store the final smallest number.
+
+// Use astacknamednumStackto manage digits based on the pattern.
+
+// Iterate through thepattern:
+
+// Pushindex + 1ontonumStack, ensuring numbers are pushed in increasing order.
+// If at the end of the pattern or the current character is'I':
+// Pop all elements fromnumStackand append them toresult, ensuring that decreasing sequences are handled before moving to the next increasing sequence.
+// Returnresultas the smallest number following the given pattern.
     string smallestNumber(string pattern) {
-        string result = "";
+        string result;
+        stack<int> numstack;
+        // iterate through pattern
+        for(int index=0;index<=pattern.size();index++){
+            // push the no next numebr onto the stack
+              numstack.push(index+1);
 
-        // Start building the sequence by calling the helper function
-        buildSequence(0, 0, pattern, result);
-        // Reverse the final result
-        reverse(result.begin(), result.end());
-        return result;
-    }
+            //   if I is encountered or we reach end, pop alll the stack elemnts 
+            if(index==pattern.size()|| pattern[index]=='I'){
+                while(!numstack.empty()){
+                    result+=to_string(numstack.top());
+                    numstack.pop();
 
-    // Recursively build the sequence
-    int buildSequence(int currentIndex, int currentCount, string pattern,
-                      string& result) {
-        if (currentIndex != pattern.size()) {
-            if (pattern[currentIndex] == 'I')
-                // If 'I', increment the count and move to the next index
-                buildSequence(currentIndex + 1, currentIndex + 1, pattern,
-                              result);
-            else
-                // If 'D', keep the count and move to the next index
-                currentCount = buildSequence(currentIndex + 1, currentCount,
-                                             pattern, result);
+                }
+            }
         }
-
-        result += to_string(currentCount + 1);
-        // Return the next count for the sequence
-        return currentCount + 1;
+        return result;
     }
 };
