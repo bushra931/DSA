@@ -42,7 +42,7 @@ private:
         }
     }
 };
-
+// Tc->O(n) in below
 class Solution {
 public:
     string getHappyString(int n, int k) {
