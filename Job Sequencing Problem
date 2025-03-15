@@ -1,0 +1,49 @@
+  struct Job {
+    int id;
+    int profit;
+    int deadline;
+};
+
+// Comparator function to sort jobs in descending order of profit
+static bool comp(const Job &val1, const Job &val2) {
+    return val1.profit > val2.profit;
+}
+
+vector<int> JobSequencing(vector<int> &id, vector<int> &deadline, vector<int> &profit) {
+    int n = id.size();
+    vector<Job> arr(n);
+
+    // Store job details
+    for (int i = 0; i < n; i++) {
+        arr[i] = {id[i], profit[i], deadline[i]};
+    }
+
+    // Sort jobs in descending order of profit
+    sort(arr.begin(), arr.end(), comp);
+
+    // Find the maximum deadline
+    int maxDeadline = 0;
+    for (int i = 0; i < n; i++) {
+        maxDeadline = max(maxDeadline, arr[i].deadline);
+    }
+
+    // Create a slot array to keep track of free time slots
+    vector<int> slot(maxDeadline + 1, -1);
+    int totalProfit = 0, count = 0;
+
+    // Iterate through each job
+    for (int i = 0; i < n; i++) {
+        // Try to place job in the latest available slot
+        for (int j = arr[i].deadline; j > 0; j--) {
+            if (slot[j] == -1) { // If slot is empty
+                slot[j] = arr[i].id; // Assign job ID to the slot
+                totalProfit += arr[i].profit; // Add profit
+                count++; // Increase job count
+                break;
+            }
+        }
+    }
+
+    return {count, totalProfit};
+    }
+};
