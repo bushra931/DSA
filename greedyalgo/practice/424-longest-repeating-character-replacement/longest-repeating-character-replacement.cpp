@@ -1,24 +1,24 @@
 class Solution {
 public:
     int characterReplacement(string s, int k) {
-        int l=0,r=0,maxlen=0,maxf=0;
-        unordered_map<int,int> freq;
-        while(r<s.size()){
-            freq[s[r]]++;
-            maxf=max(maxf,freq[s[r]]);
-            if((r-l+1)-maxf>k){
-                freq[s[l]]--;
-              
-                l++;
-            }
-            if((r-l+1)-maxf<=k){
-                maxlen=max(maxlen,r-l+1);
-            }
-            r++;
+           vector<int> frequency(26, 0);
+        int left = 0;
+        int maxFrequency = 0;
+        int ans = 0;
 
+        for(int right = 0; right < s.size(); right++) {
+            frequency[s[right] - 'A']++;
+            maxFrequency = max(maxFrequency, frequency[s[right] - 'A']);
 
+            while((right - left + 1) - maxFrequency > k) {
+                frequency[s[left] - 'A']--;
+                left++;
+            }
+
+            ans = max(ans, right - left + 1);
         }
-        return maxlen;
+
+        return ans;
         
     }
 };
