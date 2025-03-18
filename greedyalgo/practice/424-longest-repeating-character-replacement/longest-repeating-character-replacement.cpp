@@ -6,7 +6,7 @@ public:
         while(r<s.size()){
             freq[s[r]]++;
             maxf=max(maxf,freq[s[r]]);
-            while((r-l+1)-maxf>k){
+            if((r-l+1)-maxf>k){
                 freq[s[l]]--;
               
                 l++;
