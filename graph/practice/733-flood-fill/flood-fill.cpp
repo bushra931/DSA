@@ -1,6 +1,8 @@
 class Solution {
 public:
-    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int color) {
+    vector<vector<int>> floodFill(vector<vector<int>>& image1, int sr, int sc, int color) {
+        //must copy 
+        vector<vector<int>> image = image1;
         // stroring intial val of start 
         int store=image[sr][sc];
         // egde case i misesd so damnnnn test cases dekhli bhai!! unpe dry run
