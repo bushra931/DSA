@@ -1,0 +1,42 @@
+private:
+      bool detect(int src,vector<vector<int>>& adj,int vis[]){
+          vis[src]=1;
+          // q banoage
+          queue<pair<int,int>> q;
+          // q initialse korge 
+          q.push({src,-1});
+        // q jb tk emoty nhi hoti chaloge
+          while(!q.empty()){
+              // useke element nikaloge
+              int node=q.front().first;
+              int parent=q.front().second;
+              //use pop krdoge
+              q.pop();
+              //hr neighbour pr jaoge chcek kroge phir push
+              for(auto it:adj[node]){
+                  if(!vis[it]){
+                      vis[it]=1;
+                      q.push({it,node});
+                  }
+                  else if(it!=parent){
+                      return true;
+                  }
+                  
+              }
+              
+          }
+          return false;
+      }
+  public:
+    // Function to detect cycle in an undirected graph.
+    bool isCycle(vector<vector<int>>& adj) {
+        int v=adj.size();
+        int vis[v]={0};
+        for(int i=0;i<v;i++){
+            if(!vis[i]){
+               if(detect(i,adj,vis)) return true; ;
+            }
+        }
+        return false;
+        
+    }
