@@ -2,13 +2,13 @@ class Solution {
 public:
     vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
         vector<int> ans;
-        // //edge if prequ empty
-        // if(prerequisites.empty()) {
-        //     for(int i=0;i<numCourses;i++){
-        //         ans.push_back(i);
-        //     }
-        //     return ans;
-        // }
+        //edge if prequ empty
+        if(prerequisites.empty()) {
+            for(int i=0;i<numCourses;i++){
+                ans.push_back(i);
+            }
+            return ans;
+        }
         // adjacanecy list u->v
         vector<vector<int>> adj(numCourses);
         for(int i=0;i<prerequisites.size();i++){
