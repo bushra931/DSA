@@ -1,0 +1,20 @@
+ vector<int> shortestPath(vector<vector<int>>& adj, int src) {
+        int n=adj.size();
+        vector<int> dist(n,-1);
+        queue<int> q;
+        q.push(src);
+        //missed
+        dist[src]=0;
+        while(!q.empty()){
+            int node=q.front();
+            q.pop();
+            for(auto it:adj[node]){
+                if(dist[node]+1< dist[it] || dist[it]==-1){
+                    dist[it]=dist[node]+1;
+                    q.push(it);
+                }
+            }
+        }
+        return dist;
+        
+    }
