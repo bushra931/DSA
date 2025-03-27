@@ -21,9 +21,6 @@ public:
                  int nrow=r+drow;
                  int ncol=c+dcol;
                  if(nrow>=0 && ncol>=0 && nrow<n && ncol<n && grid[nrow][ncol]==0 && dis+1<dist[nrow][ncol] ){
-                    if(nrow==n-1 && ncol==n-1){
-                        return dis+1;
-                    }
                     q.push({dis+1,{nrow,ncol}});
                     dist[nrow][ncol]=dis+1;
                  }
