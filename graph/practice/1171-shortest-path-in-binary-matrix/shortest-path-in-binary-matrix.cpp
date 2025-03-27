@@ -14,7 +14,7 @@ public:
             int dis=it.first;
             int r=it.second.first;
             int c=it.second.second;
-            // for one element [0]
+            // for one element [0] its aslso handle it
             if(r==n-1 &&c==n-1 && grid[r][c]==0) return dis;
             for(int drow=-1;drow<=1;drow++){
                for(int dcol=-1;dcol<=1;dcol++){
