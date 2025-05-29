@@ -1,25 +1,37 @@
 class Solution {
 public:
-    int minPathSum(vector<vector<int>>& grid) {
-        int m=grid.size();
-        int n=grid[0].size();
-        vector<vector<int>> dp(m,vector<int>(n,0));
-        //pre declare
-        for(int i=0;i<n;i++){
-            if(i>0) dp[0][i]=grid[0][i]+dp[0][i-1];
-            else dp[0][i]=grid[0][i];
-        }
-        
-        for(int i=0;i<m;i++) {
-            if(i>0) dp[i][0]=grid[i][0]+dp[i-1][0];
-            else dp[i][0]=grid[i][0];
+    int minPathSum(vector<vector<int>>& matrix) {
+        int m = matrix.size();
+        int n = matrix[0].size();
+        vector<int> prev(n, 0); // Initialize a vector to store the previous row's minimum path sums
+
+        for (int i = 0; i < m; i++) {
+            vector<int> temp(n, 0); // Initialize a temporary vector for the current row
+            for (int j = 0; j < n; j++) {
+                if (i == 0 && j == 0)
+                    temp[j] = matrix[i][j]; // If we are at the top-left corner, the minimum path sum is the value at (0, 0)
+                else {
+                    // Calculate the minimum path sum considering moving up and moving left
+                    int up = matrix[i][j];
+                    if (i > 0)
+                        up += prev[j]; // Include the minimum path sum from above (previous row)
+                    else
+                        up += 1e9; // A large value if moving up is not possible (out of bounds)
+
+                    int left = matrix[i][j];
+                    if (j > 0)
+                        left += temp[j - 1]; // Include the minimum path sum from the left (current row)
+                    else
+                        left += 1e9; // A large value if moving left is not possible (out of bounds)
+
+                    // Store the minimum path sum in temp[j]
+                    temp[j] = min(up, left);
+                }
             }
-        //work
-        for(int i=1;i<m;i++){
-            for(int j=1;j<n;j++){
-                dp[i][j]=min(dp[i-1][j],dp[i][j-1])+grid[i][j];
-            }
+            prev = temp; // Update the previous row with the current row
         }
-        return dp[m-1][n-1];     
+
+        // The final result is stored in prev[n-1], which represents the destination in the last column
+        return prev[n - 1];
     }
 };
