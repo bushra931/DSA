@@ -1,0 +1,26 @@
+const int MOD = 1e9 + 7;
+class Solution{
+	public:
+	int perfectSum(vector<int>&arr, int k){
+        int n=arr.size();
+        vector<int> prev(k+1,0);
+        //dp[no of element][sum]
+        prev[0]=1;
+        for(int i=1;i<=n;i++){
+            vector<int> curr(k+1,0);
+            for(int sum=0;sum<=k;sum++){
+                //not pick
+                curr[sum]=prev[sum];
+                //pick
+                if(sum>=arr[i-1]){
+                    curr[sum]=(curr[sum]+prev[sum-arr[i-1]])% MOD;
+                }  
+            }
+            prev=curr;  
+        }
+        return prev[k];
+
+
+  
+	}
+};
