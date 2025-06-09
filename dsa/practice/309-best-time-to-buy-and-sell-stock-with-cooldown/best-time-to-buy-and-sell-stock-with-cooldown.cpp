@@ -3,10 +3,10 @@ public:
     int maxProfit(vector<int>& prices) {
         int n = prices.size();
         vector<int> ahead1(2, 0);
-        vector<int> ahead2(2, 0);
-        vector<int> curr(2, 0); // Fully safe now!
+        vector<int> ahead2(2, 0);// Fully safe now!
 
         for(int ind = n-1; ind >= 0; ind--){
+            vector<int> curr(2, 0); 
             for(int buy = 1; buy >= 0; buy--){
                 if(buy){
                     curr[buy] = max(-prices[ind] + ahead1[0],
