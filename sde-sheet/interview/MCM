@@ -1,0 +1,63 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution{
+private:
+    /* Recursive function to compute the 
+    minimum cost of matrix multiplication*/
+    int func(vector<int>& arr, int i, int j, vector<vector<int>>& dp) {
+    
+        /* Base case: When there is only one
+        matrix, no multiplication is needed*/
+        if (i == j)
+            return 0;
+        
+        //Check if the subproblem is already calculated    
+        if(dp[i][j]!=-1)
+        return dp[i][j];
+    
+        int mini = INT_MAX; 
+    
+        // Partition the matrices between i and j
+        for (int k = i; k <= j - 1; k++) {
+            /* Compute the cost of multiplying matrices 
+            from i to k and from k+1 to j and add cost
+            of multiplying the two resulting matrices*/
+            int ans = func(arr, i, k, dp) + func(arr, k + 1, j, dp) + arr[i - 1] * arr[k] * arr[j];
+        
+            // Update the minimum cost
+            mini = min(mini, ans);
+        }
+        // Store and return the minimum cost found
+        return dp[i][j] = mini; 
+    }
+public:
+    /* Function to set up the parameters
+    and call the recursive function*/
+    int matrixMultiplication(vector<int>& nums) {
+        int N = nums.size();
+        
+        // Starting index of the matrix chain
+        int i = 1; 
+        
+        // Ending index of the matrix chain
+        int j = N - 1; 
+        
+        vector<vector<int>> dp(N,vector<int>(N,-1));
+        
+        // Call the recursive function
+        return func(nums, i, j, dp);
+    }
+};
+
+int main() {
+    vector<int> arr = {10, 20, 30, 40, 50}; 
+    
+    //Create an instance of Solution class
+    Solution sol;
+    
+    // Print the result
+    cout << "The minimum number of operations is " << sol.matrixMultiplication(arr);
+    
+    return 0;
+}
