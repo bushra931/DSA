@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int maxsum(int ind, int prev_ind, vector<int>& arr, vector<vector<int>>& dp) {
+        if (ind == arr.size()) return 0;
+
+        // We shift prev_ind by +1 to handle -1 indexing
+        if (dp[ind][prev_ind + 1] != -1) return dp[ind][prev_ind + 1];
+
+        // Not taking current element
+        int sum1 = maxsum(ind + 1, prev_ind, arr, dp);
+
+        // Taking current element if it's greater than previous taken
+        int sum2 = INT_MIN;
+        if (prev_ind == -1 || arr[ind] > arr[prev_ind]) {
+            sum2 = arr[ind] + maxsum(ind + 1, ind, arr, dp);
+        }
+
+        return dp[ind][prev_ind + 1] = max(sum1, sum2);
+    }
+
+    int maxSumIS(vector<int>& arr) {
+        int n = arr.size();
+        // dp[i][j+1] because j = -1 is valid
+        vector<vector<int>> dp(n, vector<int>(n + 1, -1));
+        return maxsum(0, -1, arr, dp);
+    }
+};
