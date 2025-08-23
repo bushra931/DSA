@@ -1,98 +1,79 @@
 class Solution {
 public:
-    int minimumSum(vector<vector<int>>& grid) {
-          int n = grid.size(), m = grid[0].size();
+    
+    vector<vector<int>> row_sfx, col_sfx;
 
-        // prefix sum for fast submatrix sum
-        vector<vector<int>> pre(n + 1, vector<int>(m + 1, 0));
-        for (int i = 0; i < n; ++i)
-            for (int j = 0; j < m; ++j)
-                pre[i+1][j+1] = pre[i+1][j] + pre[i][j+1] - pre[i][j] + grid[i][j];
+    int get_row_count(int i, int l, int r) {
+        return row_sfx[i][l] - row_sfx[i][r + 1];
+    }
 
-        auto countOnes = [&](int r1, int r2, int c1, int c2) -> int {
-            if (r1 > r2 || c1 > c2) return 0;
-            return pre[r2+1][c2+1] - pre[r1][c2+1] - pre[r2+1][c1] + pre[r1][c1];
-        };
+    int get_col_count(int j, int t, int b) {
+        return col_sfx[j][t] - col_sfx[j][b + 1];
+    }
 
-        auto boundingArea = [&](int r1, int r2, int c1, int c2) -> int {
-            int cnt = countOnes(r1, r2, c1, c2);
-            if (cnt == 0) return 0;
+    int f1(int si, int ei, int sj, int ej) 
+    { // start i, end i, start j, end j;
+        int const n = row_sfx.size(), m = col_sfx.size();
 
-            int top = r1, bottom = r2, left = c1, right = c2;
+        while (si < ei && !get_row_count(si, sj, ej)) si++;
+        while (ei > si && !get_row_count(ei, sj, ej)) ei--;
+        while (sj < ej && !get_col_count(sj, si, ei)) sj++;
+        while (ej > sj && !get_col_count(ej, si, ei)) ej--;
 
-            while (top <= r2 && countOnes(top, top, c1, c2) == 0) ++top;
-            while (bottom >= r1 && countOnes(bottom, bottom, c1, c2) == 0) --bottom;
-            while (left <= c2 && countOnes(r1, r2, left, left) == 0) ++left;
-            while (right >= c1 && countOnes(r1, r2, right, right) == 0) --right;
+        int l = ej - sj + 1, h = ei - si + 1;
+        return max(l, 0) * max(h, 0); 
+    } // min area to cover all ones in range with a single rect;
 
-            return (bottom - top + 1) * (right - left + 1);
-        };
+    int f2(int si, int ei, int sj, int ej)
+    { // min area to cover all ones in range with 2 rect;
+        int res = max(0, (ei - si + 1)) * max(0, (ej - sj + 1));
 
-        const int INF = 1e9;
-        // dp[k][r1][r2][c1][c2] = min area to cover ones in submatrix with up to k rectangles
-        auto make4D = [&](int init) {
-            return vector(n, vector(n, vector(m, vector<int>(m, init))));
-        };
-        auto dp1 = make4D(0), dp2 = make4D(0), dp3 = make4D(0);
-
-        // iterate submatrices by height & width
-        for (int h = 1; h <= n; ++h) {
-            for (int r1 = 0; r1 + h - 1 < n; ++r1) {
-                int r2 = r1 + h - 1;
-                for (int w = 1; w <= m; ++w) {
-                    for (int c1 = 0; c1 + w - 1 < m; ++c1) {
-                        int c2 = c1 + w - 1;
-
-                        int cnt = countOnes(r1, r2, c1, c2);
-                        if (cnt == 0) {
-                            dp1[r1][r2][c1][c2] = dp2[r1][r2][c1][c2] = dp3[r1][r2][c1][c2] = 0;
-                            continue;
-                        }
-
-                        // base: one rectangle
-                        int one = boundingArea(r1, r2, c1, c2);
-                        int best2 = one;
-                        int best3 = one;
-
-                        // vertical splits
-                        for (int mid = c1; mid < c2; ++mid) {
-                            int lcnt = countOnes(r1, r2, c1, mid);
-                            int rcnt = cnt - lcnt;
-
-                            best2 = min(best2, dp1[r1][r2][c1][mid] + dp1[r1][r2][mid+1][c2]);
-                            if (rcnt == 0) best2 = min(best2, dp2[r1][r2][c1][mid]);
-                            if (lcnt == 0) best2 = min(best2, dp2[r1][r2][mid+1][c2]);
-
-                            best3 = min(best3, dp2[r1][r2][c1][mid] + dp1[r1][r2][mid+1][c2]);
-                            best3 = min(best3, dp1[r1][r2][c1][mid] + dp2[r1][r2][mid+1][c2]);
-                            if (rcnt == 0) best3 = min(best3, dp3[r1][r2][c1][mid]);
-                            if (lcnt == 0) best3 = min(best3, dp3[r1][r2][mid+1][c2]);
-                        }
-
-                        // horizontal splits
-                        for (int mid = r1; mid < r2; ++mid) {
-                            int tcnt = countOnes(r1, mid, c1, c2);
-                            int bcnt = cnt - tcnt;
-
-                            best2 = min(best2, dp1[r1][mid][c1][c2] + dp1[mid+1][r2][c1][c2]);
-                            if (bcnt == 0) best2 = min(best2, dp2[r1][mid][c1][c2]);
-                            if (tcnt == 0) best2 = min(best2, dp2[mid+1][r2][c1][c2]);
-
-                            best3 = min(best3, dp2[r1][mid][c1][c2] + dp1[mid+1][r2][c1][c2]);
-                            best3 = min(best3, dp1[r1][mid][c1][c2] + dp2[mid+1][r2][c1][c2]);
-                            if (bcnt == 0) best3 = min(best3, dp3[r1][mid][c1][c2]);
-                            if (tcnt == 0) best3 = min(best3, dp3[mid+1][r2][c1][c2]);
-                        }
-
-                        dp1[r1][r2][c1][c2] = one;
-                        dp2[r1][r2][c1][c2] = best2;
-                        dp3[r1][r2][c1][c2] = best3;
-                    }
-                }
-            }
+        for (int i = si; i <= ei - 1; i++)
+        { // row partition, [si, i] U [i + 1, ei];
+            int curr = f1(si, i, sj, ej) + f1(i + 1, ei, sj, ej);
+            res = min(res, curr);
         }
 
-        return dp3[0][n-1][0][m-1];
-        
+        for (int j = sj; j <= ej - 1; j++)
+        { // col partiion, [sj, j] U [j + 1, ej];
+            int curr = f1(si, ei, sj, j) + f1(si, ei, j + 1, ej);
+            res = min(res, curr);
+        }
+
+        return res;
+    }
+
+    int minimumSum(vector<vector<int>>& grid)
+    {
+        int const n = grid.size(), m = grid[0].size();
+        row_sfx = vector<vector<int>>(n, vector<int>(m + 1)), col_sfx = vector<vector<int>>(m, vector<int>(n + 1));
+
+        for (int i = 0; i <= n - 1; i++) {
+            for (int j = m - 1; j >= 0; j--) row_sfx[i][j] = grid[i][j] + row_sfx[i][j + 1];
+        }
+        for (int j = 0; j <= m - 1; j++) {
+            for (int i = n - 1; i >= 0; i--) col_sfx[j][i] = grid[i][j] + col_sfx[j][i + 1];
+        }
+    
+        int ans = n * m;
+        for (int i = 0; i <= n - 2; i++)
+        { // row partition, [0, i] U [i + 1, n - 1]
+            int c12 = f1(0, i, 0, m - 1) + f2(i + 1, n - 1, 0, m - 1);
+            int c21 = f2(0, i, 0, m - 1) + f1(i + 1, n - 1, 0, m - 1);
+
+            int c = min(c12, c21);
+            ans = min(ans, c);
+        }
+
+        for (int j = 0; j <= m - 2; j++)
+        { // row partition, [0, i] U [i + 1, n - 1]
+            int c12 = f1(0, n - 1, 0, j) + f2(0, n - 1, j + 1, m - 1);
+            int c21 = f2(0, n - 1, 0, j) + f1(0, n - 1, j + 1, m - 1);
+
+            int c = min(c12, c21);
+            ans = min(ans, c);
+        }
+
+        return ans;    
     }
 };
