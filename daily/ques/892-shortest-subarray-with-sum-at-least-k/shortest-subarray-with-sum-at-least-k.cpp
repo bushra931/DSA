@@ -10,14 +10,15 @@ public:
             if(j==0) prefixsum[j]= nums[j];
             else prefixsum[j]=prefixsum[j-1]+nums[j];
             if(prefixsum[j]>=k) res=min(res,j+1);
-            //shrink window or not 
-            while(!dq.empty() && prefixsum[j]-prefixsum[dq.front()]>=k){
-                res=min(res,j-dq.front());
-                dq.pop_front();
-            }
+           
             // dip agya case --> so to store inc only 
             while(!dq.empty() && prefixsum[j]<=prefixsum[dq.back()]){
                 dq.pop_back();
+            }
+             //shrink window or not 
+            while(!dq.empty() && prefixsum[j]-prefixsum[dq.front()]>=k){
+                res=min(res,j-dq.front());
+                dq.pop_front();
             }
             dq.push_back(j);
             j++;
